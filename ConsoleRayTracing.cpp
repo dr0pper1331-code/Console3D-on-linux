@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <cmath>
 #include <vector>
-#include <unistd.h> // Для функции usleep (задержка)
+#include <unistd.h>
 #include "VecFunctions.h"
 
 int main() {
@@ -11,14 +11,12 @@ int main() {
     float aspect = (float)width / height;
     float pixelAspect = 11.0f / 24.0f;
     char gradient[] = " .:!/r(l1Z4H9W8$@";
-    
-    // В C++20 std::size работает, но для совместимости и надежности:
+
     int gradientSize = sizeof(gradient) - 2; 
 
-    // Создаем буфер кадра
     std::vector<char> screen(width * height);
 
-    // Скрываем курсор в терминале перед началом (ANSI-код)
+
     std::cout << "\x1b[?25l" << std::flush;
 
     for (int t = 0; t < 10000; t++) {
@@ -73,24 +71,20 @@ int main() {
             }
         }
 
-        // Возвращаем курсор в верхний левый угол терминала (0,0) без полной очистки
-        // Это предотвращает сильное мерцание экрана
+
         std::cout << "\x1b[H";
 
-        // Выводим буфер построчно
+
         for (int j = 0; j < height; j++) {
             fwrite(&screen[j * width], 1, width, stdout);
             putchar('\n');
         }
         
-        // Сбрасываем буфер вывода, чтобы кадр сразу появился на экране
         std::fflush(stdout);
 
-        // Небольшая пауза (~16 мс для ~60 FPS), чтобы процессор не загружался на 100%
         usleep(16000); 
     }
 
-    // Возвращаем курсор обратно при выходе
     std::cout << "\x1b[?25h" << std::flush;
     return 0;
 }
